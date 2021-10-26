@@ -52,7 +52,7 @@ $(() => {
         $('#editor').css({height: lines * 1.1 + 'em', display: 'inline-block'})
         setTimeout(() => window.scrollTo(0, 0), 500)
         setTimeout(() => $('#connect').click(), 1000)
-        $('input[name="url"]').val(window.location.href + 'web3')
+        $('input[name="url"]').val('http://127.0.0.1:8000')
     })
 
     window.solc = new Worker('worker.js')
@@ -211,9 +211,8 @@ function hexToArray(hex) {
 function encodeTx(from, nonce, to, data) {
     let args = [
         /* nonce     */ nonce ? nonce.toString(16) : '',
-        /* gasPrice  */ 'f4240', // 1000000
-        /* gasLimit  */ '2faf080', // 50000000
-        /* !! sender */ from,
+        /* gasPrice  */ '1000000000', // 1000000000
+        /* gasLimit  */ '12a05f200', // 5000000000
         /* recipient */ to || '',
         /* value     */ 'f4240',
         /* payload   */ data,
@@ -226,10 +225,12 @@ function encodeTx(from, nonce, to, data) {
 }
 
 function encodeTxDeploy(from, nonce, to, data, signature) {
+    console.log(signature.substr(0,64))
+    console.log(signature.substr(64,128))
     let args = [
         /* nonce     */ nonce ? nonce.toString(16) : '',
-        /* gasPrice  */ 'f4240', // 1000000
-        /* gasLimit  */ '2faf080', // 50000000
+        /* gasPrice  */ '1000000000', // 1000000000
+        /* gasLimit  */ '12a05f200', // 5000000000
         /* recipient */ to || '',
         /* value     */ 'f4240',
         /* payload   */ data,
@@ -237,6 +238,7 @@ function encodeTxDeploy(from, nonce, to, data, signature) {
         /* r         */  signature.substr(0,64),
         /* s         */  signature.substr(64,128),
     ]
+    console.log("Mapped: ", args.map(hexToArray))
     return ethers.utils.RLP.encode(args.map(hexToArray))
 }
 
